@@ -1,0 +1,23 @@
+<a href="javascript:void();"
+    class="button is-{{ shortcode.options.style }} {{ shortcode.options.class }} {{ shortcode.options.visibility }} {{ shortcode.options.color }} is-{{ shortcode.options.size }} box-shadow-{{ shortcode.options.depth }} box-shadow-{{ shortcode.options.depthHover }}-hover {{shortcode.options.letterCase}}"
+    ng-class="{'reveal-icon' : shortcode.options.iconReveal && ((shortcode.options.iconSource !== 'wpicons' && shortcode.options.icon) || (shortcode.options.iconSource === 'wpicons' && shortcode.options.iconName)), 'expand' :  shortcode.options.expand}"
+    ng-style="{'padding' : shortcode.options.padding, 'border-radius' : shortcode.options.radius+'px'}">
+
+    <i ng-if="shortcode.options.iconSource !== 'wpicons' && shortcode.options.icon && shortcode.options.iconPos == 'left'" class="{{ shortcode.options.icon }}"></i>
+    <i ng-if="shortcode.options.iconSource === 'wpicons' && shortcode.options.iconName && shortcode.options.iconPos == 'left'"
+        class="icon-wpicons"
+        wif-canvas-icon="shortcode.options.iconName"
+        wif-canvas-size="shortcode.options.iconSize"
+        wif-canvas-color="shortcode.options.iconColor"
+        wif-canvas-stroke="shortcode.options.iconStroke"></i>
+
+    <span>{{ shortcode.options.text }}</span>
+
+    <i ng-if="shortcode.options.iconSource !== 'wpicons' && shortcode.options.icon && shortcode.options.iconPos !== 'left'" class="{{ shortcode.options.icon }}"></i>
+    <i ng-if="shortcode.options.iconSource === 'wpicons' && shortcode.options.iconName && shortcode.options.iconPos !== 'left'"
+        class="icon-wpicons"
+        wif-canvas-icon="shortcode.options.iconName"
+        wif-canvas-size="shortcode.options.iconSize"
+        wif-canvas-color="shortcode.options.iconColor"
+        wif-canvas-stroke="shortcode.options.iconStroke"></i>
+</a>

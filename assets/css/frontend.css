@@ -1,0 +1,36 @@
+.icon-box-img svg.wpicons {
+    width: 100%;
+    height: auto;
+    display: block;
+    max-width: 100%;
+}
+
+.icon-box-img svg.wpicons--lucide,
+.icon-box-img svg.wpicons--lucide path,
+.icon-box:hover .has-icon-bg svg.wpicons--lucide,
+.icon-box:hover .has-icon-bg svg.wpicons--lucide path {
+    fill: none !important;
+}
+
+.button .icon-wpicons {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.button .icon-wpicons svg {
+    width: 1em;
+    height: 1em;
+    display: block;
+}
+
+.button .icon-wpicons--sized svg {
+    width: 100%;
+    height: 100%;
+}
+
+.button .icon-wpicons svg.wpicons--lucide,
+.button .icon-wpicons svg.wpicons--lucide * {
+    fill: none !important;
+}

@@ -1,0 +1,49 @@
+.wpicons-ux-option {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.wpicons-ux-option__preview,
+.wpicons-ux-option__empty {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 12px;
+    border: 1px solid hsla(0, 0%, 100%, 0.08);
+    border-radius: 3px;
+    background: #333a41;
+    color: #f1f1f1;
+}
+
+.wpicons-ux-option__preview strong {
+    color: #f1f1f1;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.wpicons-ux-option__preview span,
+.wpicons-ux-option__empty {
+    color: #c3c4c7;
+    font-size: 12px;
+}
+
+.wpicons-ux-option__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.wpicons-ux-option__actions .wp-style {
+    position: static;
+    width: auto;
+    height: auto;
+    min-height: 28px;
+    padding: 4px 10px;
+    color: #1d2327;
+    background: #f6f7f7;
+    border: 1px solid #dcdcde;
+    box-shadow: none;
+    line-height: 1.4;
+    cursor: pointer;
+}
