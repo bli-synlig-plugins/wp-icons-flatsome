@@ -2,7 +2,7 @@
 
 WordPress-plugin som lar deg velge ikoner fra **WP Icons** (Lucide m.m.) i Flatsome UX Builder — i stedet for innebygd bildeopplasting eller Flatsome sitt ikonsett.
 
-**Versjon:** 1.0.0  
+**Versjon:** 1.1.0  
 **Forfatter:** Benjamin Pedersen  
 **Lisens:** GPLv2 or later
 
@@ -11,7 +11,7 @@ WordPress-plugin som lar deg velge ikoner fra **WP Icons** (Lucide m.m.) i Flats
 - WordPress 6.6+
 - PHP 8.1+
 - [Flatsome](https://uxthemes.com/flatsome/) (UX Builder)
-- [WP Icons](https://github.com/kimlukasmyrvold/wp-lucide-icons) (`wp-lucide-icons`) — aktiv
+- [WP Icons](https://wp-icons.com/) 2.0+ — aktiv (mappenavn `wp-lucide-icons` eller `wp-icons`)
 
 ## Installasjon
 

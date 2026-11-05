@@ -32,19 +32,12 @@
                             return;
                         }
 
-                        var config = window.WIFCanvas || {};
-                        var base = String(config.restUrl || '');
-                        if (!base) {
-                            element.empty();
-                            return;
-                        }
-
                         var size = Number(scope.wifCanvasSize);
                         var matchText = !size;
                         var color = String(scope.wifCanvasColor || 'currentColor').trim() || 'currentColor';
                         var stroke = scope.wifCanvasStroke == null || scope.wifCanvasStroke === ''
-                            ? '2'
-                            : String(scope.wifCanvasStroke);
+                            ? 2
+                            : Number(scope.wifCanvasStroke);
 
                         if (matchText) {
                             element.removeClass('icon-wpicons--sized');
@@ -63,31 +56,22 @@
                             element.css('color', color);
                         }
 
-                        var params = new URLSearchParams({
-                            library: parsed.library,
-                            name: parsed.name,
-                            size: String(matchText ? 24 : size),
-                            color: color,
-                            stroke: stroke,
-                        });
+                        if (!window.wpIcons || typeof window.wpIcons.getIcon !== 'function') {
+                            element.empty();
+                            return;
+                        }
 
-                        fetch(base + 'icon?' + params.toString(), {
-                            credentials: 'same-origin',
-                            headers: {
-                                'X-WP-Nonce': config.nonce || '',
-                            },
-                        })
-                            .then(function (response) {
-                                if (!response.ok) {
-                                    throw new Error('Icon request failed');
-                                }
-                                return response.json();
+                        window.wpIcons
+                            .getIcon(toRef(parsed), {
+                                size: matchText ? 24 : size,
+                                color: color,
+                                stroke: stroke,
                             })
-                            .then(function (data) {
+                            .then(function (svg) {
                                 if (id !== requestId) {
                                     return;
                                 }
-                                element.html(data && data.svg ? data.svg : '');
+                                element.html(svg || '');
                             })
                             .catch(function () {
                                 if (id !== requestId) {
@@ -103,16 +87,40 @@
 
     function parse(value) {
         var raw = String(value || '').trim();
+        if (raw.indexOf('wpicons:') === 0) {
+            raw = raw.slice('wpicons:'.length);
+        }
         if (!raw) {
-            return { library: 'lucide', name: '' };
+            return { library: 'lucide', name: '', variant: '' };
         }
-        var parts = raw.split('/');
-        if (parts.length < 2) {
-            return { library: 'lucide', name: raw };
+        if (raw.indexOf(':') !== -1) {
+            var colon = raw.split(':');
+            return {
+                library: colon[0] || 'lucide',
+                name: colon[1] || '',
+                variant: colon[2] || '',
+            };
         }
-        return {
-            library: parts[0] || 'lucide',
-            name: parts.slice(1).join('/'),
-        };
+        if (raw.indexOf('/') !== -1) {
+            var slash = raw.split('/');
+            return {
+                library: slash[0] || 'lucide',
+                name: slash.slice(1).join('/'),
+                variant: '',
+            };
+        }
+        return { library: 'lucide', name: raw, variant: '' };
+    }
+
+    function toRef(parsed) {
+        var library = parsed.library || 'lucide';
+        var name = parsed.name || '';
+        if (!name) {
+            return '';
+        }
+        if (parsed.variant) {
+            return library + ':' + name + ':' + parsed.variant;
+        }
+        return library + ':' + name;
     }
 })();

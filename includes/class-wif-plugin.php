@@ -23,7 +23,7 @@ class WIF_Plugin
 
     public static function has_icons(): bool
     {
-        return class_exists(\WPIcons\Icons\Renderer::class);
+        return function_exists('wpicons_get_icon');
     }
 
     public static function has_flatsome(): bool

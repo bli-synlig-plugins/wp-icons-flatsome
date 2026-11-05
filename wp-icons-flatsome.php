@@ -3,10 +3,9 @@
  * Plugin Name:         WP Icons for Flatsome
  * Plugin URI:          https://wordpress-plugins-docs.vercel.app/plugins/wp-icons-flatsome
  * Description:         Use WP Icons in Flatsome Icon Box and Button instead of the built-in image upload or icon set.
- * Version:             1.0.0
+ * Version:             1.1.0
  * Requires at least:   6.6
  * Requires PHP:        8.1
- * Requires Plugins:    wp-lucide-icons
  * Author:              Benjamin
  * License:             GPLv2 or later
  * License URI:         https://www.gnu.org/licenses/gpl-2.0.html
@@ -17,7 +16,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('WIF_VERSION', '1.0.0');
+define('WIF_VERSION', '1.1.0');
 define('WIF_PLUGIN_FILE', __FILE__);
 define('WIF_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WIF_PLUGIN_URL', plugin_dir_url(__FILE__));

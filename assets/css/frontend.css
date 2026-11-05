@@ -5,10 +5,10 @@
     max-width: 100%;
 }
 
-.icon-box-img svg.wpicons--lucide,
-.icon-box-img svg.wpicons--lucide path,
-.icon-box:hover .has-icon-bg svg.wpicons--lucide,
-.icon-box:hover .has-icon-bg svg.wpicons--lucide path {
+.icon-box-img svg.wpicons[fill="none"],
+.icon-box-img svg.wpicons[fill="none"] path,
+.icon-box:hover .has-icon-bg svg.wpicons[fill="none"],
+.icon-box:hover .has-icon-bg svg.wpicons[fill="none"] path {
     fill: none !important;
 }
 
@@ -30,7 +30,7 @@
     height: 100%;
 }
 
-.button .icon-wpicons svg.wpicons--lucide,
-.button .icon-wpicons svg.wpicons--lucide * {
+.button .icon-wpicons svg.wpicons[fill="none"],
+.button .icon-wpicons svg.wpicons[fill="none"] * {
     fill: none !important;
 }

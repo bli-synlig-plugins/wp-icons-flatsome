@@ -9,7 +9,7 @@ class WIF_Icons
     public const SENTINEL_PREFIX = 'wpicons:';
 
     /**
-     * @return array{library: string, name: string}
+     * @return array{library: string, name: string, variant: string}
      */
     public static function parse(string $value): array
     {
@@ -18,10 +18,23 @@ class WIF_Icons
             $value = substr($value, strlen(self::SENTINEL_PREFIX));
         }
 
+        $empty = [
+            'library' => 'lucide',
+            'name' => '',
+            'variant' => '',
+        ];
+
         if ($value === '') {
+            return $empty;
+        }
+
+        if (str_contains($value, ':')) {
+            $parts = explode(':', $value);
+
             return [
-                'library' => 'lucide',
-                'name' => '',
+                'library' => sanitize_key($parts[0] ?? '') ?: 'lucide',
+                'name' => self::sanitize_name($parts[1] ?? ''),
+                'variant' => self::sanitize_variant($parts[2] ?? ''),
             ];
         }
 
@@ -31,12 +44,14 @@ class WIF_Icons
             return [
                 'library' => sanitize_key($library) ?: 'lucide',
                 'name' => self::sanitize_name($name),
+                'variant' => '',
             ];
         }
 
         return [
             'library' => 'lucide',
             'name' => self::sanitize_name($value),
+            'variant' => '',
         ];
     }
 
@@ -47,9 +62,42 @@ class WIF_Icons
         return preg_replace('/[^a-z0-9_-]/', '', $name) ?? '';
     }
 
-    public static function sentinel(string $library, string $name): string
+    public static function sanitize_variant(string $variant): string
     {
-        return self::SENTINEL_PREFIX . $library . '/' . $name;
+        $variant = strtolower(trim($variant));
+
+        return preg_match('/^[a-z0-9-]{1,20}$/', $variant) === 1 ? $variant : '';
+    }
+
+    /**
+     * @param array{library?: string, name?: string, variant?: string} $parsed
+     */
+    public static function ref(array $parsed): string
+    {
+        $library = sanitize_key((string) ($parsed['library'] ?? '')) ?: 'lucide';
+        $name = self::sanitize_name((string) ($parsed['name'] ?? ''));
+        $variant = self::sanitize_variant((string) ($parsed['variant'] ?? ''));
+
+        if ($name === '') {
+            return '';
+        }
+
+        if ($variant !== '') {
+            return $library . ':' . $name . ':' . $variant;
+        }
+
+        return $library . ':' . $name;
+    }
+
+    public static function sentinel(string $library, string $name, string $variant = ''): string
+    {
+        $ref = self::ref([
+            'library' => $library,
+            'name' => $name,
+            'variant' => $variant,
+        ]);
+
+        return $ref === '' ? '' : self::SENTINEL_PREFIX . $ref;
     }
 
     public static function is_sentinel(string $value): bool
@@ -90,21 +138,26 @@ class WIF_Icons
     }
 
     /**
-     * @param array{library: string, name: string} $parsed
+     * @param array{library: string, name: string, variant?: string} $parsed
      * @param array<string, mixed> $attributes
      */
     public static function svg(array $parsed, array $attributes = []): string
     {
-        if ($parsed['name'] === '' || !class_exists(\WPIcons\Icons\Renderer::class)) {
+        if ($parsed['name'] === '' || !function_exists('wpicons_get_icon')) {
             return '';
         }
 
-        return (new \WPIcons\Icons\Renderer())->fromAttributes(array_merge(
-            $attributes,
-            [
-                'library' => $parsed['library'],
-                'name' => $parsed['name'],
-            ]
-        ));
+        $ref = self::ref($parsed);
+        if ($ref === '') {
+            return '';
+        }
+
+        $args = $attributes;
+        $variant = self::sanitize_variant((string) ($parsed['variant'] ?? ''));
+        if ($variant !== '' && (!isset($args['variant']) || !is_string($args['variant']) || $args['variant'] === '')) {
+            $args['variant'] = $variant;
+        }
+
+        return wpicons_get_icon($ref, $args);
     }
 }

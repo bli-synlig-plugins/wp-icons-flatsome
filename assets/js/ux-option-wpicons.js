@@ -32,7 +32,7 @@
             '<div class="wpicons-ux-option">' +
                 '<div class="wpicons-ux-option__preview" ng-if="$ctrl.label()">' +
                     '<strong>{{ $ctrl.label() }}</strong>' +
-                    '<span>{{ $ctrl.library() }}</span>' +
+                    '<span>{{ $ctrl.meta() }}</span>' +
                 '</div>' +
                 '<div class="wpicons-ux-option__empty" ng-if="!$ctrl.label()">' +
                     '{{ $ctrl.emptyLabel }}' +
@@ -56,8 +56,13 @@
                 ctrl.clearLabel = 'Remove';
                 ctrl.emptyLabel = 'No icon selected';
 
-                ctrl.library = function () {
-                    return parse(ctrl.model).library;
+                ctrl.meta = function () {
+                    var parsed = parse(ctrl.model);
+                    var parts = [parsed.library];
+                    if (parsed.variant) {
+                        parts.push(parsed.variant);
+                    }
+                    return parts.filter(Boolean).join(' · ');
                 };
 
                 ctrl.label = function () {
@@ -71,7 +76,7 @@
                 };
 
                 ctrl.open = function () {
-                    if (!window.WPIcons || typeof window.WPIcons.openPicker !== 'function') {
+                    if (!window.wpIcons || typeof window.wpIcons.openPicker !== 'function') {
                         window.alert('WP Icons picker is not available.');
                         return;
                     }
@@ -81,36 +86,40 @@
                     var isIconBox = Object.prototype.hasOwnProperty.call(values, 'imgWidth');
                     var size = isIconBox
                         ? Number(values.imgWidth) || 60
-                        : values.iconSize;
+                        : Number(values.iconSize) || undefined;
 
-                    window.WPIcons.openPicker({
-                        library: parsed.library,
-                        name: parsed.name,
-                        color: values.iconColor || 'currentColor',
-                        stroke: values.iconStroke || 2,
-                        size: size,
-                        allowMatchText: !isIconBox,
-                        onSelect: function (_html, icon) {
+                    window.wpIcons
+                        .openPicker({
+                            value: {
+                                library: parsed.library,
+                                name: parsed.name,
+                                variant: parsed.variant,
+                                color: values.iconColor || 'currentColor',
+                                stroke: values.iconStroke || 2,
+                                size: size,
+                            },
+                        })
+                        .then(function (icon) {
                             if (!icon || !icon.name) {
                                 return;
                             }
                             $scope.$applyAsync(function () {
                                 var model = ctrl.$optionsCtrl && ctrl.$optionsCtrl.model;
-                                ctrl.model = (icon.library || 'lucide') + '/' + icon.name;
+                                ctrl.model = toRef(icon);
                                 if (!model) {
                                     return;
                                 }
                                 model.iconColor = icon.color || 'currentColor';
-                                model.iconStroke = icon.stroke == null || icon.stroke === '' ? 2 : Number(icon.stroke);
+                                model.iconStroke =
+                                    icon.stroke == null || icon.stroke === '' ? 2 : Number(icon.stroke);
                                 if (isIconBox) {
                                     var nextSize = Number(icon.size) || Number(values.imgWidth) || 60;
                                     model.imgWidth = Math.max(20, Math.min(600, nextSize));
-                                } else {
-                                    model.iconSize = icon.size || 0;
+                                } else if (icon.size) {
+                                    model.iconSize = Number(icon.size) || 0;
                                 }
                             });
-                        },
-                    });
+                        });
                 };
 
                 ctrl.clear = function () {
@@ -119,17 +128,41 @@
 
                 function parse(value) {
                     var raw = String(value || '').trim();
+                    if (raw.indexOf('wpicons:') === 0) {
+                        raw = raw.slice('wpicons:'.length);
+                    }
                     if (!raw) {
-                        return { library: 'lucide', name: '' };
+                        return { library: 'lucide', name: '', variant: '' };
                     }
-                    var parts = raw.split('/');
-                    if (parts.length < 2) {
-                        return { library: 'lucide', name: raw };
+                    if (raw.indexOf(':') !== -1) {
+                        var colon = raw.split(':');
+                        return {
+                            library: colon[0] || 'lucide',
+                            name: colon[1] || '',
+                            variant: colon[2] || '',
+                        };
                     }
-                    return {
-                        library: parts[0] || 'lucide',
-                        name: parts.slice(1).join('/'),
-                    };
+                    if (raw.indexOf('/') !== -1) {
+                        var slash = raw.split('/');
+                        return {
+                            library: slash[0] || 'lucide',
+                            name: slash.slice(1).join('/'),
+                            variant: '',
+                        };
+                    }
+                    return { library: 'lucide', name: raw, variant: '' };
+                }
+
+                function toRef(icon) {
+                    var library = icon.library || 'lucide';
+                    var name = icon.name || '';
+                    if (!name) {
+                        return '';
+                    }
+                    if (icon.variant) {
+                        return library + ':' + name + ':' + icon.variant;
+                    }
+                    return library + ':' + name;
                 }
             },
         ],

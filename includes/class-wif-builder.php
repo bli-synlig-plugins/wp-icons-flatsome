@@ -24,10 +24,14 @@ class WIF_Builder
     public static function enqueue(string $context): void
     {
         if ($context === 'editor') {
+            if (wp_script_is('wpicons-api', 'registered')) {
+                wp_enqueue_script('wpicons-api');
+            }
+
             wp_enqueue_script(
                 'wpicons-flatsome-ux-option',
                 WIF_PLUGIN_URL . 'assets/js/ux-option-wpicons.js',
-                array('ux-builder-core', 'wpicons-tinymce-picker'),
+                array('ux-builder-core', 'wpicons-api'),
                 WIF_VERSION,
                 true
             );
@@ -35,7 +39,7 @@ class WIF_Builder
             wp_enqueue_style(
                 'wpicons-flatsome-ux-option',
                 WIF_PLUGIN_URL . 'assets/css/ux-option-wpicons.css',
-                array('ux-builder-core', 'wp-components', 'wpicons_tinymce_picker_style'),
+                array('ux-builder-core', 'wp-components'),
                 WIF_VERSION
             );
 
@@ -53,21 +57,16 @@ class WIF_Builder
             WIF_VERSION
         );
 
+        if (wp_script_is('wpicons-api', 'registered')) {
+            wp_enqueue_script('wpicons-api');
+        }
+
         wp_enqueue_script(
             'wpicons-flatsome-ux-canvas',
             WIF_PLUGIN_URL . 'assets/js/ux-canvas-icon.js',
-            array('ux-builder-core'),
+            array('ux-builder-core', 'wpicons-api'),
             WIF_VERSION,
             true
-        );
-
-        wp_localize_script(
-            'wpicons-flatsome-ux-canvas',
-            'WIFCanvas',
-            array(
-                'restUrl' => rest_url('wpicons/v1/'),
-                'nonce' => wp_create_nonce('wp_rest'),
-            )
         );
     }
 

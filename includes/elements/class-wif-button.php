@@ -148,7 +148,11 @@ class WIF_Button
             return (string) call_user_func($original, $atts, $content);
         }
 
-        $atts[self::FLATSOME_ICON] = WIF_Icons::sentinel($parsed['library'], $parsed['name']);
+        $atts[self::FLATSOME_ICON] = WIF_Icons::sentinel(
+            $parsed['library'],
+            $parsed['name'],
+            $parsed['variant'] ?? ''
+        );
         self::$styleStack[] = $style;
         try {
             return (string) call_user_func($original, $atts, $content);
@@ -196,7 +200,7 @@ class WIF_Button
     }
 
     /**
-     * @param array{library: string, name: string} $parsed
+     * @param array{library: string, name: string, variant?: string} $parsed
      * @param array{size: int, color: string, stroke: float, match_text: bool} $style
      */
     private static function render_svg(array $parsed, array $style): string
