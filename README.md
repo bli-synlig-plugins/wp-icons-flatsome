@@ -2,7 +2,7 @@
 
 WordPress-plugin som lar deg velge ikoner fra **WP Icons** (Lucide m.m.) i Flatsome UX Builder — i stedet for innebygd bildeopplasting eller Flatsome sitt ikonsett.
 
-**Versjon:** 1.1.0  
+**Versjon:** 1.2.0  
 **Forfatter:** Benjamin Pedersen  
 **Lisens:** GPLv2 or later
 
@@ -22,11 +22,12 @@ WordPress-plugin som lar deg velge ikoner fra **WP Icons** (Lucide m.m.) i Flats
 ## Funksjoner
 
 - Egendefinert UX Builder option type `wpicons` med ikonvelger
-- Utvidede **Icon Box** (featured box) og **Button**-elementer med WP Icons-støtte
+- Utvidede **Icon Box** (featured box), **Button** og **Menu link**-elementer med WP Icons-støtte
+- Align, gap og posisjon for ikoner i Menu link
 - Frontend-CSS for riktig visning av ikoner i Flatsome-komponenter
 
 Uten WP Icons vises en admin-feilmelding. Uten Flatsome vises advarsel; integrasjonen aktiveres når Flatsome er i bruk.
 
 ## Dokumentasjon
 
-https://wordpress-plugins-docs.vercel.app/plugins/wp-icons-flatsome
+https://kodekassa.no/plugins/wp-icons-flatsome

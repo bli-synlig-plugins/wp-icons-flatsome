@@ -15,16 +15,10 @@ class WIF_Button
     public const GROUP = 'icon_options';
     public const FLATSOME_ICON = 'icon';
 
-    /**
-     * @var list<array{size: int, color: string, stroke: float, match_text: bool}>
-     */
-    private static array $styleStack = [];
-
     public static function init(): void
     {
         add_filter('ux_builder_shortcode_data_' . self::TAG, array(__CLASS__, 'extend_builder'), 20);
         add_action('wp_loaded', array(__CLASS__, 'wrap_shortcode'), 20);
-        add_filter('flatsome_icon', array(__CLASS__, 'filter_icon'), 10, 4);
     }
 
     /**
@@ -143,7 +137,12 @@ class WIF_Button
         }
 
         $style = WIF_Icons::style_from_atts($atts);
-        $svg = self::render_svg($parsed, $style);
+        $svg = WIF_Icons::svg($parsed, [
+            'size' => $style['match_text'] ? 24 : $style['size'],
+            'color' => $style['color'],
+            'stroke' => $style['stroke'],
+            'class' => '',
+        ]);
         if ($svg === '') {
             return (string) call_user_func($original, $atts, $content);
         }
@@ -153,63 +152,9 @@ class WIF_Button
             $parsed['name'],
             $parsed['variant'] ?? ''
         );
-        self::$styleStack[] = $style;
-        try {
+
+        return WIF_Icons::with_style($style, static function () use ($original, $atts, $content) {
             return (string) call_user_func($original, $atts, $content);
-        } finally {
-            array_pop(self::$styleStack);
-        }
-    }
-
-    /**
-     * @param array<string, mixed>|null $atts
-     */
-    public static function filter_icon(string $html, string $name, $size = null, $atts = null): string
-    {
-        if (!WIF_Icons::is_sentinel($name)) {
-            return $html;
-        }
-
-        $parsed = WIF_Icons::parse($name);
-        if ($parsed['name'] === '') {
-            return $html;
-        }
-
-        $style = self::$styleStack !== []
-            ? self::$styleStack[array_key_last(self::$styleStack)]
-            : WIF_Icons::style_from_atts([]);
-        $svg = self::render_svg($parsed, $style);
-        if ($svg === '') {
-            return $html;
-        }
-
-        $classes = ['icon-wpicons'];
-        $inline = [];
-        if (!$style['match_text'] && $style['size'] > 0) {
-            $classes[] = 'icon-wpicons--sized';
-            $inline[] = 'width:' . $style['size'] . 'px';
-            $inline[] = 'height:' . $style['size'] . 'px';
-        }
-        if (strcasecmp($style['color'], 'currentColor') !== 0) {
-            $inline[] = 'color:' . $style['color'];
-        }
-
-        $styleAttr = $inline !== [] ? ' style="' . esc_attr(implode(';', $inline)) . '"' : '';
-
-        return '<i class="' . esc_attr(implode(' ', $classes)) . '" aria-hidden="true"' . $styleAttr . '>' . $svg . '</i>';
-    }
-
-    /**
-     * @param array{library: string, name: string, variant?: string} $parsed
-     * @param array{size: int, color: string, stroke: float, match_text: bool} $style
-     */
-    private static function render_svg(array $parsed, array $style): string
-    {
-        return WIF_Icons::svg($parsed, [
-            'size' => $style['match_text'] ? 24 : $style['size'],
-            'color' => $style['color'],
-            'stroke' => $style['stroke'],
-            'class' => '',
-        ]);
+        });
     }
 }

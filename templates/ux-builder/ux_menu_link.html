@@ -1,0 +1,24 @@
+<div
+  class="ux-menu-link menu-item {{ shortcode.options.visibility }} {{ shortcode.options.class }} {{ shortcode.options.label }}"
+  ng-class="{
+    'wif-menu-link': (shortcode.options.iconSource !== 'wpicons' && shortcode.options.icon) || (shortcode.options.iconSource === 'wpicons' && shortcode.options.iconName),
+    'wif-menu-link--icon-right': shortcode.options.iconPos === 'right'
+  }"
+  ng-style="{
+    '--wif-icon-align': shortcode.options.iconAlign === 'start' ? 'flex-start' : (shortcode.options.iconAlign === 'end' ? 'flex-end' : 'center'),
+    '--wif-icon-gap': (shortcode.options.iconGap === 0 || shortcode.options.iconGap === '0' ? 0 : (shortcode.options.iconGap || 8)) + 'px'
+  }"
+>
+  <a class="ux-menu-link__link flex" href="javascript:void();" target="{{ shortcode.options.target }}" rel="{{ shortcode.options.rel }}">
+    <i ng-if="shortcode.options.iconSource !== 'wpicons' && shortcode.options.icon" class="ux-menu-link__icon text-center {{ shortcode.options.icon }}"></i>
+    <i ng-if="shortcode.options.iconSource === 'wpicons' && shortcode.options.iconName"
+       class="ux-menu-link__icon text-center icon-wpicons"
+       wif-canvas-icon="shortcode.options.iconName"
+       wif-canvas-size="shortcode.options.iconSize"
+       wif-canvas-color="shortcode.options.iconColor"
+       wif-canvas-stroke="shortcode.options.iconStroke"></i>
+    <span class="ux-menu-link__text">
+      {{ shortcode.options.text }}
+    </span>
+  </a>
+</div>

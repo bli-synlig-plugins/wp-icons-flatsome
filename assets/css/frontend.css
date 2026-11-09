@@ -34,3 +34,41 @@
 .button .icon-wpicons svg.wpicons[fill="none"] * {
     fill: none !important;
 }
+
+.ux-menu-link.wif-menu-link .ux-menu-link__link {
+    align-items: var(--wif-icon-align, center);
+    gap: var(--wif-icon-gap, 8px);
+}
+
+.ux-menu-link.wif-menu-link .ux-menu-link__icon + .ux-menu-link__text {
+    padding-left: 0;
+}
+
+.ux-menu-link.wif-menu-link--icon-right .ux-menu-link__link {
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+.ux-menu-link .ux-menu-link__icon.icon-wpicons {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    line-height: 1;
+}
+
+.ux-menu-link .ux-menu-link__icon.icon-wpicons svg {
+    width: 1em;
+    height: 1em;
+    display: block;
+}
+
+.ux-menu-link .ux-menu-link__icon.icon-wpicons--sized svg {
+    width: 100%;
+    height: 100%;
+}
+
+.ux-menu-link .icon-wpicons svg.wpicons[fill="none"],
+.ux-menu-link .icon-wpicons svg.wpicons[fill="none"] * {
+    fill: none !important;
+}

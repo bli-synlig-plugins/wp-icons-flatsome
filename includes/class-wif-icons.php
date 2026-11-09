@@ -9,6 +9,16 @@ class WIF_Icons
     public const SENTINEL_PREFIX = 'wpicons:';
 
     /**
+     * @var list<array{size: int, color: string, stroke: float, match_text: bool}>
+     */
+    private static array $styleStack = [];
+
+    public static function init(): void
+    {
+        add_filter('flatsome_icon', array(__CLASS__, 'filter_icon'), 10, 4);
+    }
+
+    /**
      * @return array{library: string, name: string, variant: string}
      */
     public static function parse(string $value): array
@@ -102,7 +112,88 @@ class WIF_Icons
 
     public static function is_sentinel(string $value): bool
     {
-        return str_starts_with($value, self::SENTINEL_PREFIX);
+        return str_starts_with(trim($value), self::SENTINEL_PREFIX);
+    }
+
+    public static function extract_sentinel(string $value): string
+    {
+        $value = trim($value);
+        if (self::is_sentinel($value) && !str_contains($value, ' ')) {
+            return $value;
+        }
+
+        $pattern = '/(?:^|\s)(' . preg_quote(self::SENTINEL_PREFIX, '/') . '[a-z0-9_:-]+)(?:\s|$)/i';
+        if (preg_match($pattern, $value, $matches) === 1) {
+            return $matches[1];
+        }
+
+        return '';
+    }
+
+    /**
+     * @param array{size: int, color: string, stroke: float, match_text: bool} $style
+     * @param callable(): string $callback
+     */
+    public static function with_style(array $style, callable $callback): string
+    {
+        self::$styleStack[] = $style;
+        try {
+            return (string) $callback();
+        } finally {
+            array_pop(self::$styleStack);
+        }
+    }
+
+    /**
+     * @param array<string, mixed>|null $atts
+     */
+    public static function filter_icon(string $html, string $name, $size = null, $atts = null): string
+    {
+        $sentinel = self::extract_sentinel($name);
+        if ($sentinel === '') {
+            return $html;
+        }
+
+        $parsed = self::parse($sentinel);
+        if ($parsed['name'] === '') {
+            return $html;
+        }
+
+        $style = self::$styleStack !== []
+            ? self::$styleStack[array_key_last(self::$styleStack)]
+            : self::style_from_atts([]);
+        $svg = self::svg($parsed, [
+            'size' => $style['match_text'] ? 24 : $style['size'],
+            'color' => $style['color'],
+            'stroke' => $style['stroke'],
+            'class' => '',
+        ]);
+        if ($svg === '') {
+            return $html;
+        }
+
+        $classes = ['icon-wpicons'];
+        $originalClass = is_array($atts) ? (string) ($atts['class'] ?? $name) : $name;
+        foreach (preg_split('/\s+/', $originalClass) ?: [] as $class) {
+            if ($class === '' || $class === 'icon-wpicons' || self::is_sentinel($class)) {
+                continue;
+            }
+            $classes[] = $class;
+        }
+
+        $inline = [];
+        if (!$style['match_text'] && $style['size'] > 0) {
+            $classes[] = 'icon-wpicons--sized';
+            $inline[] = 'width:' . $style['size'] . 'px';
+            $inline[] = 'height:' . $style['size'] . 'px';
+        }
+        if (strcasecmp($style['color'], 'currentColor') !== 0) {
+            $inline[] = 'color:' . $style['color'];
+        }
+
+        $styleAttr = $inline !== [] ? ' style="' . esc_attr(implode(';', $inline)) . '"' : '';
+
+        return '<i class="' . esc_attr(implode(' ', $classes)) . '" aria-hidden="true"' . $styleAttr . '>' . $svg . '</i>';
     }
 
     /**

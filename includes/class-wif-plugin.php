@@ -15,8 +15,10 @@ class WIF_Plugin
         }
 
         WIF_Builder::init();
+        WIF_Icons::init();
         WIF_Featured_Box::init();
         WIF_Button::init();
+        WIF_Menu_Link::init();
 
         add_action('wp_enqueue_scripts', array(__CLASS__, 'enqueue_front'), 20);
     }
@@ -46,7 +48,7 @@ class WIF_Plugin
 
         if (!self::has_flatsome()) {
             echo '<div class="notice notice-warning"><p>';
-            echo esc_html__('WP Icons for Flatsome is active, but Flatsome was not detected. Icon Box and Button integration stays disabled until Flatsome is used.', 'wpicons-flatsome');
+            echo esc_html__('WP Icons for Flatsome is active, but Flatsome was not detected. Icon Box, Button and Menu integration stays disabled until Flatsome is used.', 'wpicons-flatsome');
             echo '</p></div>';
         }
     }
